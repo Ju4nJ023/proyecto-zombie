@@ -1,32 +1,42 @@
 # ============================================================
-# FINISH - Detectar llegada al destino y finalizar viaje
-# Se ejecuta desde tick.mcfunction (como el aldeano viajando)
+# FINISH - Finalizar viaje al llegar al destino
+# Se ejecuta UNA SOLA VEZ desde tick.mcfunction
 # ============================================================
 
-# Comprobar si el aldeano esta a 2 bloques o menos del destino
+# PASO 1: QUITAR TAG viajando_guia (corta el bucle de tick inmediatamente)
+tag @a[tag=viajando_jugador] add llegado
+tag @s remove viajando_guia
 
-# Parar el sonido de la barca
-execute positioned 1041 63 403 if entity @s[distance=..2] run stopsound @a[tag=viajando_jugador] master isla_transport:isla_transport.barca
+# PASO 2: PARAR SONIDO DE BARCA
+stopsound @a[tag=llegado] master isla_transport:isla_transport.barca
 
-# Mensaje de llegada
-execute positioned 1041 63 403 if entity @s[distance=..2] run tellraw @a[tag=viajando_jugador] [{"text":"[Transporte] ","color":"gold","bold":true},{"text":"¡Has llegado a tu destino! Buen viaje.","color":"green"}]
+# PASO 3: MENSAJE DE LLEGADA (condicional segun destino)
+execute if entity @a[tag=llegado,tag=destino_volcan] run tellraw @a[tag=llegado] [{"text":"[Transporte] ","color":"gold","bold":true},{"text":"¡Has llegado a ","color":"green"},{"text":"Isla Volcán","color":"red","bold":true},{"text":"!","color":"green"}]
+execute if entity @a[tag=llegado,tag=destino_coral] run tellraw @a[tag=llegado] [{"text":"[Transporte] ","color":"gold","bold":true},{"text":"¡Has llegado a ","color":"green"},{"text":"Isla Coral","color":"aqua","bold":true},{"text":"!","color":"green"}]
 
-# Teletransportar al jugador al destino (bajarlo en tierra firme, 1 bloque arriba del suelo)
-execute positioned 1041 63 403 if entity @s[distance=..2] run tp @a[tag=viajando_jugador] 1041 64 403
+# PASO 4: ELIMINAR BARCA (desmonta al jugador automaticamente)
+kill @e[type=minecraft:boat,tag=barca_viaje]
 
-# Eliminar la barca de viaje
-execute positioned 1041 63 403 if entity @s[distance=..2] run kill @e[type=minecraft:boat,tag=barca_viaje]
+# PASO 5: TELETRANSPORTAR JUGADOR AL DESTINO (segun destino)
+tp @a[tag=llegado,tag=destino_volcan] 1041 64 403
+tp @a[tag=llegado,tag=destino_coral] 800 64 500
 
-# Hacer visible al aldeano de nuevo
-execute positioned 1041 63 403 if entity @s[distance=..2] run data merge entity @s {Invisible:0b}
+# PASO 6: PARTICULAS DE CELEBRACION
+execute at @a[tag=llegado] run particle minecraft:happy_villager ~ ~1 ~ 0.5 0.5 0.5 0.1 15
+execute at @a[tag=llegado] run particle minecraft:firework ~ ~1 ~ 0.5 0.5 0.5 0.1 10
 
-# Quitar tags de viaje
-execute positioned 1041 63 403 if entity @s[distance=..2] run tag @a[tag=viajando_jugador] remove viajando_jugador
-execute positioned 1041 63 403 if entity @s[distance=..2] run tag @s remove viajando_guia
+# PASO 7: SONIDO DE LLEGADA
+execute at @a[tag=llegado] run playsound minecraft:entity.player.levelup master @a[distance=..10] ~ ~ ~ 1 1
 
-# Particulas de llegada (celebracion)
-execute positioned 1041 63 403 if entity @s[distance=..2] at @s run particle minecraft:happy_villager ~ ~1 ~ 0.5 0.5 0.5 0.1 15
-execute positioned 1041 63 403 if entity @s[distance=..2] at @s run particle minecraft:firework ~ ~1 ~ 0.5 0.5 0.5 0.1 10
+# PASO 8: LIMPIEZA DE TAGS DEL JUGADOR
+tag @a[tag=llegado] remove viajando_jugador
+tag @a[tag=llegado] remove destino_volcan
+tag @a[tag=llegado] remove destino_coral
+tag @a[tag=llegado] remove llegado
 
-# Sonido de llegada
-execute positioned 1041 63 403 if entity @s[distance=..2] at @s run playsound minecraft:entity.player.levelup master @a[distance=..10] ~ ~ ~ 1 1
+# PASO 9: RESETEAR ALDEANO (no matar, reutilizar para el proximo viaje)
+# Quitar tags de destino, hacerlo visible, teletransportar de vuelta al spawn
+tag @s remove destino_volcan
+tag @s remove destino_coral
+data merge entity @s {Invisible:0b}
+tp @s 967 63 377
