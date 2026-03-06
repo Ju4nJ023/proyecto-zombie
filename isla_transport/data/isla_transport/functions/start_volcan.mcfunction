@@ -3,10 +3,6 @@
 # Destino: 1041 63 403
 # ============================================================
 
-# Limpiar estado de dialogo
-scoreboard players set @s isla_destino 0
-tag @s remove en_dialogo
-
 # Asignar tags de viaje al jugador
 tag @s add viajando_jugador
 tag @s add destino_volcan
