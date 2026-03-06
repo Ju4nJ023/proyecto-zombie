@@ -1,15 +1,18 @@
 # ============================================================
-# MAIN_TICK - Orquestador principal (se ejecuta cada tick)
+# MAIN_TICK - Orquestador principal (cada tick)
 # ============================================================
 
-# 1. Sincronizar entidad de interaccion con el aldeano (solo fuera de viaje)
-execute as @e[type=minecraft:villager,tag=guia_isla,tag=!viajando_guia] at @s run tp @e[type=minecraft:interaction,tag=guia_interaccion] ~ ~ ~
+# 1. Dar tokens a jugadores cercanos al aldeano (si no estan en menu/viaje)
+execute as @e[type=minecraft:villager,tag=guia_isla,tag=!viajando_guia] at @s as @a[distance=..3,tag=!en_menu,tag=!en_advertencia,tag=!cerrando_gui,tag=!viajando_jugador] run function isla_transport:give_tokens
 
-# 2. Detectar click derecho (solo si no hay viaje activo ni GUI abierta)
-execute as @e[type=minecraft:interaction,tag=guia_interaccion] if data entity @s interaction unless entity @e[tag=viajando_guia] unless entity @a[tag=en_gui] run function isla_transport:interaction
+# 2. Cancelar menu si jugador se aleja
+execute as @a[tag=en_menu] at @s unless entity @e[type=minecraft:villager,tag=guia_isla,distance=..6] run function isla_transport:cancel_menu
+execute as @a[tag=en_advertencia] at @s unless entity @e[type=minecraft:villager,tag=guia_isla,distance=..6] run function isla_transport:cancel_menu
 
-# 3. GUI tick (si alguien tiene el menu abierto)
-execute if entity @a[tag=en_gui] run function isla_transport:gui_tick
+# 3. Detectar trades del menu
+execute if entity @a[tag=en_menu] run function isla_transport:menu_tick
+execute if entity @a[tag=cerrando_gui] run function isla_transport:menu_tick
+execute if entity @a[tag=en_advertencia] run function isla_transport:menu_tick
 
-# 4. Si hay viaje activo, ejecutar logica de movimiento
+# 4. Viaje activo
 execute if entity @e[tag=viajando_guia] run function isla_transport:tick

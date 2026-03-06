@@ -35,8 +35,10 @@ tag @a[tag=llegado] remove destino_coral
 tag @a[tag=llegado] remove llegado
 
 # PASO 9: RESETEAR ALDEANO (no matar, reutilizar para el proximo viaje)
-# Quitar tags de destino, hacerlo visible, teletransportar de vuelta al spawn
 tag @s remove destino_volcan
 tag @s remove destino_coral
 data merge entity @s {Invisible:0b}
 tp @s 967 63 377
+
+# PASO 10: RESTAURAR TRADES DE DESTINO
+data merge entity @s {Offers:{Recipes:[{buy:{id:"minecraft:emerald",Count:1b,tag:{display:{Name:'{"text":"Token de Viaje","color":"gold","italic":false}'}}},sell:{id:"minecraft:magma_block",Count:1b,tag:{display:{Name:'{"text":"Isla Volcán","color":"red","bold":true,"italic":false}',Lore:['{"text":"Destino peligroso","color":"gray","italic":false}']}}},maxUses:9999,rewardExp:0b,xp:0},{buy:{id:"minecraft:emerald",Count:1b,tag:{display:{Name:'{"text":"Token de Viaje","color":"gold","italic":false}'}}},sell:{id:"minecraft:tube_coral_block",Count:1b,tag:{display:{Name:'{"text":"Isla Coral","color":"aqua","bold":true,"italic":false}',Lore:['{"text":"Destino tranquilo","color":"gray","italic":false}']}}},maxUses:9999,rewardExp:0b,xp:0}]}}
