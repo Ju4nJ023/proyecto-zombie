@@ -1,0 +1,10 @@
+{
+    "isla_transport.barca": {
+        "sounds": [
+            {
+                "name": "isla_transport:sonido_barca",
+                "stream": true
+            }
+        ]
+    }
+}

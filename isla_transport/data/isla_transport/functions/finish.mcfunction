@@ -4,10 +4,21 @@
 # ============================================================
 
 # Comprobar si el aldeano esta a 2 bloques o menos del destino
-# >>> CAMBIAR "100 65 100" POR LAS COORDENADAS DE TU ISLA DE DESTINO <<<
-# Si esta cerca, ejecutar los comandos de finalizacion
 
+# Parar el sonido de la barca
+execute positioned 1041 63 403 if entity @s[distance=..2] run stopsound @a[tag=viajando_jugador] master isla_transport:isla_transport.barca
+
+# Mensaje de llegada
 execute positioned 1041 63 403 if entity @s[distance=..2] run tellraw @a[tag=viajando_jugador] [{"text":"[Transporte] ","color":"gold","bold":true},{"text":"¡Has llegado a tu destino! Buen viaje.","color":"green"}]
+
+# Teletransportar al jugador al destino (bajarlo en tierra firme, 1 bloque arriba del suelo)
+execute positioned 1041 63 403 if entity @s[distance=..2] run tp @a[tag=viajando_jugador] 1041 64 403
+
+# Eliminar la barca de viaje
+execute positioned 1041 63 403 if entity @s[distance=..2] run kill @e[type=minecraft:boat,tag=barca_viaje]
+
+# Hacer visible al aldeano de nuevo
+execute positioned 1041 63 403 if entity @s[distance=..2] run data merge entity @s {Invisible:0b}
 
 # Quitar tags de viaje
 execute positioned 1041 63 403 if entity @s[distance=..2] run tag @a[tag=viajando_jugador] remove viajando_jugador
