@@ -2,17 +2,27 @@
 # MAIN_TICK - Orquestador principal (cada tick)
 # ============================================================
 
-# 1. Dar tokens a jugadores cercanos al aldeano (si no estan en menu/viaje)
-execute as @e[type=minecraft:villager,tag=guia_isla,tag=!viajando_guia] at @s as @a[distance=..3,tag=!en_menu,tag=!en_advertencia,tag=!cerrando_gui,tag=!viajando_jugador] run function isla_transport:give_tokens
+# 1. Sincronizar interaccion con aldeano (fuera de viaje)
+execute as @e[type=minecraft:villager,tag=guia_isla,tag=!viajando_guia] at @s run tp @e[type=minecraft:interaction,tag=guia_interaccion] ~ ~ ~
 
-# 2. Cancelar menu si jugador se aleja
+# 2. Detectar click derecho (sin viaje activo ni menu abierto)
+execute as @e[type=minecraft:interaction,tag=guia_interaccion] if data entity @s interaction unless entity @e[tag=viajando_guia] unless entity @a[tag=en_menu] unless entity @a[tag=en_advertencia] run function isla_transport:interaction
+
+# 3. Habilitar trigger para jugadores en menu
+scoreboard players enable @a[tag=en_menu] isla_destino
+scoreboard players enable @a[tag=en_advertencia] isla_destino
+
+# 4. Detectar seleccion de destino
+execute as @a[tag=en_menu,scores={isla_destino=1}] run function isla_transport:check_volcan
+execute as @a[tag=en_menu,scores={isla_destino=2}] run function isla_transport:select_coral
+
+# 5. Detectar respuesta de advertencia
+execute as @a[tag=en_advertencia,scores={isla_destino=3}] run function isla_transport:confirm_volcan
+execute as @a[tag=en_advertencia,scores={isla_destino=4}] run function isla_transport:cancel_menu
+
+# 6. Cancelar si se aleja
 execute as @a[tag=en_menu] at @s unless entity @e[type=minecraft:villager,tag=guia_isla,distance=..6] run function isla_transport:cancel_menu
 execute as @a[tag=en_advertencia] at @s unless entity @e[type=minecraft:villager,tag=guia_isla,distance=..6] run function isla_transport:cancel_menu
 
-# 3. Detectar trades del menu
-execute if entity @a[tag=en_menu] run function isla_transport:menu_tick
-execute if entity @a[tag=cerrando_gui] run function isla_transport:menu_tick
-execute if entity @a[tag=en_advertencia] run function isla_transport:menu_tick
-
-# 4. Viaje activo
+# 7. Viaje activo
 execute if entity @e[tag=viajando_guia] run function isla_transport:tick
