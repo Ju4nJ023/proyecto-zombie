@@ -5,8 +5,7 @@
 
 # Mensaje de advertencia
 tellraw @s [{"text":"[Transporte] ","color":"gold","bold":true},{"text":"¡Tu equipo es insuficiente para Isla Volcán!","color":"red"}]
-title @s title [{"text":"⚠ ADVERTENCIA ⚠","color":"red","bold":true}]
-title @s subtitle [{"text":"Equipo insuficiente para este destino","color":"yellow"}]
+title @s actionbar [{"text":"⚠ ADVERTENCIA ⚠ - Equipo insuficiente","color":"red","bold":true}]
 
 # Forzar cierre del GUI: teletransportar aldeano lejos
 execute as @e[type=minecraft:villager,tag=guia_isla] run tp @s ~ ~100 ~

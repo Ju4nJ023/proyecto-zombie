@@ -37,3 +37,18 @@ execute if data entity @s Inventory[{Slot:100b,id:"minecraft:chainmail_boots"}] 
 execute if data entity @s Inventory[{Slot:100b,id:"minecraft:iron_boots"}] run scoreboard players add @s gear_score 3
 execute if data entity @s Inventory[{Slot:100b,id:"minecraft:diamond_boots"}] run scoreboard players add @s gear_score 5
 execute if data entity @s Inventory[{Slot:100b,id:"minecraft:netherite_boots"}] run scoreboard players add @s gear_score 6
+
+# --- MANO PRINCIPAL (Armas largas) ---
+execute if data entity @s SelectedItem{id:"minecraft:wood_sword"} run scoreboard players add @s gear_score 1
+execute if data entity @s SelectedItem{id:"minecraft:stone_sword"} run scoreboard players add @s gear_score 2
+execute if data entity @s SelectedItem{id:"minecraft:golden_sword"} run scoreboard players add @s gear_score 2
+execute if data entity @s SelectedItem{id:"minecraft:bow"} run scoreboard players add @s gear_score 2
+execute if data entity @s SelectedItem{id:"minecraft:iron_sword"} run scoreboard players add @s gear_score 3
+execute if data entity @s SelectedItem{id:"minecraft:crossbow"} run scoreboard players add @s gear_score 3
+execute if data entity @s SelectedItem{id:"minecraft:diamond_sword"} run scoreboard players add @s gear_score 5
+execute if data entity @s SelectedItem{id:"minecraft:trident"} run scoreboard players add @s gear_score 5
+execute if data entity @s SelectedItem{id:"minecraft:netherite_sword"} run scoreboard players add @s gear_score 6
+
+# --- MANO SECUNDARIA (Escudos/Totems - Slot -106b) ---
+execute if data entity @s Inventory[{Slot:-106b,id:"minecraft:shield"}] run scoreboard players add @s gear_score 3
+execute if data entity @s Inventory[{Slot:-106b,id:"minecraft:totem_of_undying"}] run scoreboard players add @s gear_score 5

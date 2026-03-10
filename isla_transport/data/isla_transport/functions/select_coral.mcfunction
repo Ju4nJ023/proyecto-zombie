@@ -1,13 +1,15 @@
 # ============================================================
-# SELECT_CORAL - Seleccionar viaje a Isla Coral (sin gear check)
+# SELECT_CORAL - Viajar a Isla Coral (Sin validaciones)
 # ============================================================
 
-# Limpieza
-tag @s remove en_menu
-scoreboard players set @s isla_destino 0
+# 1. El item ya se ha limpiado en menu_tick, saltamos ese paso
+tellraw @s {"text":"[DEBUG] Iniciando select_coral","color":"gray"}
 
-# Limpiar actionbar
-title @s actionbar {"text":""}
+# Limpiar tags de menu
+tag @s remove en_menu
+tag @s remove en_advertencia
+tag @s remove cerrando_gui
+scoreboard players set @s gui_check 0
 
 # Iniciar viaje
 function isla_transport:start_coral

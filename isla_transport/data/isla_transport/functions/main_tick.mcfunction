@@ -1,34 +1,22 @@
 # ============================================================
-# MAIN_TICK - Deteccion infalible (cada tick)
+# MAIN_TICK - Orquestador principal (cada tick)
 # ============================================================
 
-# ===== METODO 1: SCOREBOARD (click derecho al aldeano) =====
-# Si hablar_guia >= 1 Y el jugador esta cerca del aldeano guia → interactuar
-execute as @a[scores={hablar_guia=1..},tag=!en_menu,tag=!en_advertencia,tag=!viajando_jugador] at @s if entity @e[type=minecraft:villager,tag=npc_guia,distance=..5] run tag @s add menu_pendiente
+# 1. Mensaje de bienvenida a jugadores cercanos al aldeano (si no estan en menu/viaje)
+execute as @e[type=minecraft:villager,tag=guia_isla,tag=!viajando_guia] at @s as @a[distance=..5,tag=!en_menu,tag=!en_advertencia,tag=!cerrando_gui,tag=!viajando_jugador] run function isla_transport:give_tokens
+# 2. Cancelar menu si jugador se aleja
+execute as @a[tag=en_menu] at @s unless entity @e[type=minecraft:villager,tag=guia_isla,distance=..10] run function isla_transport:cancel_menu
+execute as @a[tag=en_advertencia] at @s unless entity @e[type=minecraft:villager,tag=guia_isla,distance=..10] run function isla_transport:cancel_menu
 
+# 3. Detectar trades del menu
+execute if entity @a[tag=en_menu] run function isla_transport:menu_tick
+execute if entity @a[tag=cerrando_gui] run function isla_transport:menu_tick
+execute if entity @a[tag=en_advertencia] run function isla_transport:menu_tick
 
-
-# ===== RESETEAR SCORE SIEMPRE =====
-scoreboard players set @a[scores={hablar_guia=1..}] hablar_guia 0
-
-# ===== EJECUTAR DIALOGO si hay pendiente =====
-execute as @a[tag=menu_pendiente] run function isla_transport:interaction
-
-# ===== TRIGGER PARA OPCIONES DEL CHAT =====
-scoreboard players enable @a[tag=en_menu] isla_destino
-scoreboard players enable @a[tag=en_advertencia] isla_destino
-
-# ===== DETECTAR SELECCION =====
-execute as @a[tag=en_menu,scores={isla_destino=1}] run function isla_transport:check_volcan
-execute as @a[tag=en_menu,scores={isla_destino=2}] run function isla_transport:select_coral
-
-# ===== DETECTAR ADVERTENCIA =====
-execute as @a[tag=en_advertencia,scores={isla_destino=3}] run function isla_transport:confirm_volcan
-execute as @a[tag=en_advertencia,scores={isla_destino=4}] run function isla_transport:cancel_menu
-
-# ===== CANCELAR SI SE ALEJA =====
-execute as @a[tag=en_menu] at @s unless entity @e[type=minecraft:villager,tag=npc_guia,distance=..5] run function isla_transport:cancel_menu
-execute as @a[tag=en_advertencia] at @s unless entity @e[type=minecraft:villager,tag=npc_guia,distance=..5] run function isla_transport:cancel_menu
-
-# ===== VIAJE ACTIVO =====
+# 4. Viaje activo
 execute if entity @e[tag=viajando_guia] run function isla_transport:tick
+
+# 5. Detectar compras de Billete de Regreso usando if data
+execute as @a if data entity @s Inventory[{id:"minecraft:cherry_boat"}] run scoreboard players set @s gui_check 5
+execute as @a if score @s gui_check matches 5 run clear @s minecraft:cherry_boat 1
+execute as @a if score @s gui_check matches 5 run function isla_transport:return_interact

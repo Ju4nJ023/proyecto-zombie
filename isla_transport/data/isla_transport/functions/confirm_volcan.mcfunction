@@ -1,15 +1,21 @@
 # ============================================================
 # CONFIRM_VOLCAN - Confirmar viaje a Isla Volcan
-# (gear suficiente o jugador acepto el riesgo)
+# Se ejecuta cuando gear >= 10 o jugador elige "Si, adelante"
 # ============================================================
 
-# Limpieza de tags y trigger
+# Limpiar items de trade del inventario
+clear @s minecraft:magma_block 1
+clear @s minecraft:red_wool 1
+clear @s minecraft:emerald{display:{Name:'{"text":"Token de Viaje","color":"gold","italic":false}'}} 1
+
+# Limpiar tags de menu
 tag @s remove en_menu
 tag @s remove en_advertencia
-scoreboard players set @s isla_destino 0
+tag @s remove cerrando_gui
+scoreboard players set @s gui_check 0
 
-# Limpiar actionbar
-title @s actionbar {"text":""}
+# Restaurar trades del aldeano a destinos
+data merge entity @e[type=minecraft:villager,tag=guia_isla,limit=1] {Offers:{Recipes:[{buy:{id:"minecraft:emerald",Count:1b,tag:{display:{Name:'{"text":"Token de Viaje","color":"gold","italic":false}'}}},sell:{id:"minecraft:magma_block",Count:1b,tag:{display:{Name:'{"text":"Isla Volcán","color":"red","bold":true,"italic":false}',Lore:['{"text":"Destino peligroso","color":"gray","italic":false}']}}},maxUses:9999,rewardExp:0b,xp:0},{buy:{id:"minecraft:emerald",Count:1b,tag:{display:{Name:'{"text":"Token de Viaje","color":"gold","italic":false}'}}},sell:{id:"minecraft:tube_coral_block",Count:1b,tag:{display:{Name:'{"text":"Isla Coral","color":"aqua","bold":true,"italic":false}',Lore:['{"text":"Destino tranquilo","color":"gray","italic":false}']}}},maxUses:9999,rewardExp:0b,xp:0}]}}
 
 # Iniciar viaje
 function isla_transport:start_volcan

@@ -1,20 +1,30 @@
 # ============================================================
-# INTERACTION - Dialogo del aldeano guia (Chat Menu)
+# INTERACTION - Abrir menu visual (barrel GUI)
+# Se ejecuta cuando un jugador hace click derecho al aldeano
 # ============================================================
 
-# Limpiar pendiente para que no se ejecute en bucle
-tag @s remove menu_pendiente
+# --- MENSAJE DE BIENVENIDA ---
+tellraw @s [{"text":"[Transporte] ","color":"gold","bold":true},{"text":"El Guía te saluda. ","color":"yellow"},{"text":"Consigue Tokens de Viaje en la Taquilla para viajar.","color":"gray","italic":true}]
 
-# Marcar en menu
+# --- VERIFICACION DE CLIMA (TORMENTA/LLUVIA) ---
+# Si llueve, bloqueamos el viaje
+execute as @s if predicate isla_transport:is_raining run tellraw @s [{"text":"[Guía] ","color":"aqua","bold":true},{"text":"Es muy peligroso navegar con este clima. Vuelve cuando escampe.","color":"red"}]
+execute as @s if predicate isla_transport:is_raining run playsound minecraft:entity.villager.no master @s
+execute as @s if predicate isla_transport:is_raining run data remove entity @s interaction
+execute as @s if predicate isla_transport:is_raining run return 0
+
+# --- VERIFICACION DE NOCHE ---
+# Eliminar tag antigua por si acaso
+execute as @s run tag @s remove viaje_nocturno
+# De 13000 a 23000 es la noche en Minecraft
+execute as @s if time 13000..23000 run tag @s add viaje_nocturno
+execute as @s[tag=viaje_nocturno] run tellraw @s [{"text":"[Guía] ","color":"aqua","bold":true},{"text":"Es de noche. La vuelta cuesta ","color":"gray"},{"text":"2 Tokens","color":"gold","bold":true},{"text":". Espero que los tengas.","color":"gray"}]
+
+# Marcar jugador en menu para loops de deteccion
 tag @s add en_menu
 
-# Habilitar trigger para que funcionen los clicks
-scoreboard players enable @s isla_destino
-scoreboard players set @s isla_destino 0
+# Marcar al jugador mas cercano como en GUI
+execute at @s run tag @a[distance=..3,limit=1,sort=nearest,tag=!viajando_jugador,tag=!en_gui] add en_gui
 
-# Título y sonido
-title @s actionbar [{"text":"Mira el chat de texto para viajar","color":"gold"}]
-execute at @s run playsound minecraft:entity.villager.trade master @s ~ ~ ~ 1 1
-
-# ======= MENU CLICKEABLE =======
-tellraw @s ["\n",{"text":"[Guía] ","color":"green","bold":true},{"text":"¿A qué isla quieres ir?\n","color":"white"},"\n",{"text":"  ► ","color":"gray"},{"text":"[Isla Volcán]","color":"red","bold":true,"clickEvent":{"action":"run_command","value":"/trigger isla_destino set 1"},"hoverEvent":{"action":"show_text","value":{"text":"Destino peligroso","color":"red"}}},"\n",{"text":"  ► ","color":"gray"},{"text":"[Isla Coral]","color":"aqua","bold":true,"clickEvent":{"action":"run_command","value":"/trigger isla_destino set 2"},"hoverEvent":{"action":"show_text","value":{"text":"Destino tranquilo","color":"aqua"}}},"\n"]
+# Mensaje en action bar
+title @a[tag=en_gui] actionbar [{"text":">>> Habla con el Guía para elegir destino >>>","color":"gold","bold":true}]
