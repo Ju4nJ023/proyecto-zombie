@@ -13,8 +13,8 @@ execute if entity @a[tag=en_menu] run function isla_transport:menu_tick
 execute if entity @a[tag=cerrando_gui] run function isla_transport:menu_tick
 execute if entity @a[tag=en_advertencia] run function isla_transport:menu_tick
 
-# 4. Viaje activo
-execute if entity @e[tag=viajando_guia] run function isla_transport:tick
+# 4. Viaje activo (Cinematica por jugador)
+execute as @a[tag=viajando_jugador] run function isla_transport:tick
 
 # 5. Detectar compras de Billete de Regreso usando if data
 execute as @a if data entity @s Inventory[{id:"minecraft:cherry_boat"}] run scoreboard players set @s gui_check 5

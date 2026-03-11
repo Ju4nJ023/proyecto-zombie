@@ -22,6 +22,7 @@ scoreboard objectives add gear_score dummy
 scoreboard objectives add gui_check dummy
 scoreboard objectives add return_cooldown dummy
 scoreboard objectives add travel_timer dummy
+scoreboard objectives add viaje_estado dummy
 
 # Limpiar barrel legacy
 setblock 968 63 377 air
